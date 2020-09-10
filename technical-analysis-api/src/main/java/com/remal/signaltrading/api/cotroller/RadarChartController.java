@@ -1,5 +1,6 @@
 package com.remal.signaltrading.api.cotroller;
 
+import java.time.Instant;
 import java.util.EnumSet;
 
 import org.springframework.http.HttpStatus;
@@ -32,11 +33,11 @@ public class RadarChartController {
      *    - 1 week
      *    - 1 month</p>
      *
-     * <p>Example GET REST call: http://localhost:8081/api/radar?ticker=ee&interval=300000&scale=60000</p>
+     * <p>Example GET REST call: http://localhost:8081/api/radar?ticker=ee&interval=300&scale=60</p>
      *
      * @param ticker product identifier number
-     * @param interval interval in milliseconds
-     * @param scale interval in milliseconds
+     * @param interval interval in seconds
+     * @param scale interval in seconds
      * @return data what can be used to generate chart
      */
     @RequestMapping("/radar")
@@ -44,14 +45,74 @@ public class RadarChartController {
                                              @RequestParam long interval,
                                              @RequestParam long scale) {
 
-        Interval intervalEnum = Interval.valueOf(interval);
-        Interval scaleEnum = Interval.valueOf(scale);
-        boolean validRequest = validateRequest(intervalEnum, scaleEnum);
-
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Greetings from Spring Boot! " + validRequest);
+        if (validateRequest(interval, scale)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Greetings from Spring Boot!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getHelpMessage());
+        }
     }
 
-    private boolean validateRequest(Interval intervalEnum, Interval scaleEnum) {
+    private String getHelpMessage() {
+        String liBegin = "<li>";
+        String liEnd = "</il>";
+
+        StringBuilder sb = new StringBuilder()
+                .append(Instant.now().toString()).append(": Invalid interval or scale.")
+                .append("<p>Possible values: </p>")
+                .append("<ul>")
+
+                .append(liBegin)
+                .append(Interval.FIVE_MINUTES).append(": ")
+                .append(Interval.getPossibleScales(Interval.FIVE_MINUTES))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.FIFTEEN_MINUTES).append(": ")
+                .append(Interval.getPossibleScales(Interval.FIFTEEN_MINUTES))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.THIRTY_MINUTES).append(": ")
+                .append(Interval.getPossibleScales(Interval.THIRTY_MINUTES))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.ONE_HOUR).append(": ")
+                .append(Interval.getPossibleScales(Interval.ONE_HOUR))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.TWO_HOURS).append(": ")
+                .append(Interval.getPossibleScales(Interval.TWO_HOURS))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.FOUR_HOURS).append(": ")
+                .append(Interval.getPossibleScales(Interval.FOUR_HOURS))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.EIGHT_HOURS).append(": ")
+                .append(Interval.getPossibleScales(Interval.EIGHT_HOURS))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.ONE_DAY).append(": ")
+                .append(Interval.getPossibleScales(Interval.ONE_DAY))
+                .append(liEnd)
+
+                .append(liBegin)
+                .append(Interval.ONE_WEEK).append(": ")
+                .append(Interval.getPossibleScales(Interval.ONE_WEEK))
+                .append(liEnd)
+
+                .append("</ul>");
+        return sb.toString();
+    }
+
+    private boolean validateRequest(long interval, long scale) {
+        Interval intervalEnum = Interval.valueOf(interval);
+        Interval scaleEnum = Interval.valueOf(scale);
         EnumSet<Interval> possibleScales = Interval.getPossibleScales(intervalEnum);
         boolean validScale = possibleScales.contains(scaleEnum);
         return validScale && Interval.UNDEFINED != scaleEnum;
