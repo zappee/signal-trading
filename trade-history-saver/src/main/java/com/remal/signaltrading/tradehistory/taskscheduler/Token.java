@@ -16,20 +16,10 @@ import lombok.ToString;
 @Builder
 @Getter
 @Setter
-//@ToString
+@ToString
 public class Token {
     private String id;
     private String taskId;
     private Long startAt;
     private Long finishedAt;
-
-    @Override
-    public String toString() {
-        return "Token{" +
-                "id='" + id + '\'' +
-                ", taskId='" + taskId + '\'' +
-                ", startAt=" + (Objects.isNull(startAt) ? "null" : Instant.ofEpochMilli(startAt)) +
-                ", finishedAt=" + (Objects.isNull(finishedAt) ? "null" : Instant.ofEpochMilli(finishedAt)) +
-                '}';
-    }
 }
