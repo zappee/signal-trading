@@ -12,13 +12,6 @@
     <artifactId>trade-history-saver</artifactId>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-
-        <!-- file encodings -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
         <commonsText.version>1.9</commonsText.version>
         <hikariCp.version>3.4.5</hikariCp.version>
         <lombok.version>1.18.12</lombok.version>

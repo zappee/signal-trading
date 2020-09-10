@@ -73,10 +73,14 @@ public class CandlesService {
 
         String response = exchange.get(endpoint, new ParameterizedTypeReference<String>() { });
         List<Candle> candles = parseResponse(productId, response);
-        log.debug("{} candles have been downloaded: {}",
-                candles.size(),
-                candles.stream().map(Candle::toString).collect(Collectors.joining()));
 
+        if (candles.isEmpty()) {
+            log.debug("no candles have been downloaded");
+        } else {
+            log.debug("{} candles have been downloaded: {}",
+                    candles.size(),
+                    candles.stream().map(Candle::toString).collect(Collectors.joining()));
+        }
         return candles;
     }
 
