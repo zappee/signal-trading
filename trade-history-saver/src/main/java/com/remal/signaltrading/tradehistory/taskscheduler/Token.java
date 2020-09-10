@@ -1,5 +1,8 @@
 package com.remal.signaltrading.tradehistory.taskscheduler;
 
+import java.time.Instant;
+import java.util.Objects;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +16,20 @@ import lombok.ToString;
 @Builder
 @Getter
 @Setter
-@ToString
+//@ToString
 public class Token {
     private String id;
+    private String taskId;
     private Long startAt;
     private Long finishedAt;
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "id='" + id + '\'' +
+                ", taskId='" + taskId + '\'' +
+                ", startAt=" + (Objects.isNull(startAt) ? "null" : Instant.ofEpochMilli(startAt)) +
+                ", finishedAt=" + (Objects.isNull(finishedAt) ? "null" : Instant.ofEpochMilli(finishedAt)) +
+                '}';
+    }
 }

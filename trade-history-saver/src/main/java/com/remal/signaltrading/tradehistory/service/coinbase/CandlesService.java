@@ -75,7 +75,7 @@ public class CandlesService {
         List<Candle> candles = parseResponse(productId, response);
 
         if (candles.isEmpty()) {
-            log.debug("no candles have been downloaded");
+            log.debug("nothing to downloaded");
         } else {
             log.debug("{} candles have been downloaded: {}",
                     candles.size(),

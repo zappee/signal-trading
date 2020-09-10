@@ -35,7 +35,7 @@ public class TokenBucket {
         this.maxRequestsWithinPeriod = maxRequestsWithinPeriod;
     }
 
-    public synchronized Optional<String> consume() {
+    public synchronized Optional<String> consume(String taskId) {
         long now = System.currentTimeMillis();
         long runningTasks = tokens.stream().filter(token -> token.getFinishedAt() == null).count();
         long completedWithinPeriod = tokens.stream()
@@ -46,7 +46,7 @@ public class TokenBucket {
 
         String tokenId = UUID.randomUUID().toString();
         if (runningTasks + completedWithinPeriod < maxRequestsWithinPeriod) {
-            tokens.add(Token.builder().id(tokenId).startAt(now).build());
+            tokens.add(Token.builder().id(tokenId).taskId(taskId).startAt(now).build());
             return Optional.of(tokenId);
         }
 

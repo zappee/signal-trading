@@ -58,7 +58,7 @@ public class CoinbaseCandlesTask implements Runnable {
      */
     @Override
     public void run() {
-        tokenBucket.consume().ifPresentOrElse(
+        tokenBucket.consume(id).ifPresentOrElse(
             token -> callRestAndPersistResult(token),
             () -> log.trace("{} task has been skipped", id)
         );
