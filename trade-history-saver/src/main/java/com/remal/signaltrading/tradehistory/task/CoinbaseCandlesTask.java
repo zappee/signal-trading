@@ -3,6 +3,7 @@ package com.remal.signaltrading.tradehistory.task;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -49,6 +50,7 @@ public class CoinbaseCandlesTask implements Runnable {
         this.tokenBucket = tokenBucket;
         this.service = service;
         this.dataSource = dataSource;
+        checkTable();
     }
 
     /**
@@ -82,9 +84,7 @@ public class CoinbaseCandlesTask implements Runnable {
         try (Connection connection = dataSource.getConnection()) {
             candles.forEach(candle -> {
                 log.info("persisting {}...", candle.toString());
-                String sql = String.format(
-                        "INSERT INTO coinbase_%s VALUES(?, ?, ?, ?, ?, ?)",
-                        id.toLowerCase().replace("-", "_"));
+                String sql = String.format("INSERT INTO %s VALUES(?, ?, ?, ?, ?, ?)", getTableName());
 
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     stmt.setTimestamp(1, Timestamp.from(candle.getTime()));
@@ -93,7 +93,6 @@ public class CoinbaseCandlesTask implements Runnable {
                     stmt.setBigDecimal(4, candle.getOpeningPrice());
                     stmt.setBigDecimal(5, candle.getClosingPrice());
                     stmt.setBigDecimal(6, candle.getVolume());
-
                     stmt.executeUpdate();
                 } catch (SQLException e) {
                     if ("23505".equals(e.getSQLState())) {
@@ -111,10 +110,10 @@ public class CoinbaseCandlesTask implements Runnable {
 
     private void update(Candle candle) {
         String sql = String.format(
-                "UPDATE coinbase_%s "
+                "UPDATE %s "
                 + "SET lowest_price = ?, highest_price = ?, opening_price = ?, closing_price = ?, volume = ? "
                 + "WHERE trade_date = ?",
-                id.toLowerCase().replace("-", "_"));
+                getTableName());
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -125,10 +124,55 @@ public class CoinbaseCandlesTask implements Runnable {
             stmt.setBigDecimal(4, candle.getClosingPrice());
             stmt.setBigDecimal(5, candle.getVolume());
             stmt.setTimestamp(6, Timestamp.from(candle.getTime()));
-
             stmt.executeUpdate();
         } catch (SQLException e) {
             log.error("An error appeared while updating a record in the database.", e);
+        }
+    }
+
+    private String getTableName() {
+        return "coinbase_" + id.toLowerCase().replace("-", "_");
+    }
+
+    private void checkTable() {
+        String sql = String.format("SELECT * FROM %s", getTableName());
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.executeQuery();
+        } catch (SQLException e) {
+            if ("42P01".equals(e.getSQLState())) {
+                log.debug("creating database table for {}...", id);
+                createTable();
+            } else {
+                log.error("An unknown error appeared while initializing the database table for {}.", id, e);
+            }
+        }
+    }
+
+    private void createTable() {
+        String sql = new StringBuilder()
+                .append("CREATE TABLE %s (")
+                .append("    trade_date TIMESTAMP PRIMARY KEY,")
+                .append("    lowest_price DECIMAL(11, 6) NOT NULL,")
+                .append("    highest_price DECIMAL(11, 6) NOT NULL,")
+                .append("    opening_price DECIMAL(11, 6) NOT NULL,")
+                .append("    closing_price DECIMAL(11, 6) NOT NULL,")
+                .append("    volume DECIMAL(14,8) NOT NULL")
+                .append(")")
+                .toString();
+        sql = String.format(sql, getTableName());
+
+        try (Connection connection = dataSource.getConnection();
+             Statement stmt = connection.createStatement()) {
+
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            if ("42P01".equals(e.getSQLState())) {
+                createTable();
+            } else {
+                log.error("An unknown error appeared while initializing the database table for {}.", id, e);
+            }
         }
     }
 }

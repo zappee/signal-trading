@@ -57,6 +57,7 @@ public class CommandLineArgParser implements CommandLineRunner {
                 taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("ETH-EUR"), delay);
                 taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("BTC-EUR"), delay);
                 taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("XRP-EUR"), delay);
+                taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("ETH-USD"), delay);
                 break;
 
             case "accounts":
