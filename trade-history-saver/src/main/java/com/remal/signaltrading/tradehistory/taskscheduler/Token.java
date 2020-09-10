@@ -1,8 +1,5 @@
 package com.remal.signaltrading.tradehistory.taskscheduler;
 
-import java.time.Instant;
-import java.util.Objects;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
