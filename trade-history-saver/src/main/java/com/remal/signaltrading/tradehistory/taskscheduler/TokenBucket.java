@@ -30,6 +30,12 @@ public class TokenBucket {
      */
     private long maxRequestsWithinPeriod;
 
+    /**
+     * Constructor.
+     *
+     * @param lengthOfPeriod length of the period in milliseconds
+     * @param maxRequestsWithinPeriod number of the maximum requests within the period
+     */
     public TokenBucket(long lengthOfPeriod, long maxRequestsWithinPeriod) {
         this.lengthOfPeriod = lengthOfPeriod;
         this.maxRequestsWithinPeriod = maxRequestsWithinPeriod;

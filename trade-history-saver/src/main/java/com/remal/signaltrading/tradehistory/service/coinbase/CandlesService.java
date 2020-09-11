@@ -67,7 +67,7 @@ public class CandlesService {
         String endpoint = String.format(ENDPOINT, productId)
                 + "?start=" + StringEscapeUtils.escapeHtml4(utcStart)
                 + "&end=" + StringEscapeUtils.escapeHtml4(utcEnd)
-                + "&granularity=" + granularity.getValueInSec();
+                + "&granularity=" + granularity.getSeconds();
 
         log.debug("getting historical rates, endpoint: " + endpoint + "...");
 

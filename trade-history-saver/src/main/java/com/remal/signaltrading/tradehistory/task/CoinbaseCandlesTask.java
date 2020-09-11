@@ -31,7 +31,7 @@ public class CoinbaseCandlesTask implements Runnable {
     private final DataSource dataSource;
 
     private long start = Instant.now().toEpochMilli();
-    private long end = start - GRANULARITY.getValueInMilli();
+    private long end = start - GRANULARITY.getMilliseconds();
 
     /**
      * Constructor.
@@ -67,7 +67,7 @@ public class CoinbaseCandlesTask implements Runnable {
     private void callRestAndPersistResult(String token) {
         try {
             long now = Instant.now().toEpochMilli();
-            start = (now - end < GRANULARITY.getValueInMilli()) ? now - GRANULARITY.getValueInMilli() : end;
+            start = (now - end < GRANULARITY.getMilliseconds()) ? now - GRANULARITY.getMilliseconds() : end;
             end = now;
             List<Candle> candles = service.getCandles(
                     id,

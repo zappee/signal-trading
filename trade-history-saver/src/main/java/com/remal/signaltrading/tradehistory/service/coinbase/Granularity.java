@@ -24,11 +24,11 @@ public enum Granularity {
         this.value = value;
     }
 
-    public long getValueInSec() {
+    public long getSeconds() {
         return value;
     }
 
-    public long getValueInMilli() {
+    public long getMilliseconds() {
         return value * 1000L;
     }
 }

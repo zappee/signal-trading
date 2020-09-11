@@ -46,6 +46,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 
 ## 5) REST Endpoints
 ### 5.1) Radar chart
+#### 5.1.1) With interval
 * URL: `GET /api/radar`
 * Parameters:
     * ticker: the name of the product
@@ -54,8 +55,26 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 * Example request: `GET` [http://localhost:8081/api/radar?ticker=ETH-EUR&interval=300&scale=60](http://localhost:8081/api/radar?ticker=ETH-EUR&interval=300&scale=60)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
-Example charts:
+#### 5.1.2) With period start and end
+* URL: `GET /api/radar-with-interval`
+* Parameters:
+    * ticker: the name of the product
+    * start: start of the period
+    * end: end of the period
+    * scale: the granularity of the data
+* Example request: `GET` [http://localhost:8081/api/radar-with-interval?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400](http://localhost:8081/api/radar-with-interval?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400)
+* Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
-* daily radar chart with 1h scale: ![](docs/example-chatrs/ETH-EUR%20daily%20radar%20chart.png)
-* weekly radar chart shows trends in price and volume within days (from Monday to Sunday: ![](docs/aaa.png)
-* daily historical prices with 1h scale: ![](docs/example-chatrs/ETH-EUR%20daily%20line%20chart.png)
+## 6) Example charts
+
+* daily radar chart with 1h scale:
+
+    ![](docs/example-chatrs/ETH-EUR%20daily%20radar%20chart.png)
+
+* weekly radar chart shows trends in price and volume within days (from Monday to Sunday:
+
+    ![](docs/aaa.png)
+
+* daily historical prices with 1h scale:
+
+    ![](docs/example-chatrs/ETH-EUR%20daily%20line%20chart.png)

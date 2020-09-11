@@ -1,5 +1,6 @@
 package com.remal.signaltrading.api.validator;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,23 @@ public class RadarChartRequestValidator {
     }
 
     /**
+     * Validates the length of the given timeframe.
+     *
+     * @param periodStart start of the period
+     * @param periodEnd end of the period
+     * @param scale scale in seconds
+     * @return true if the size of the given timeframe is less or equals with the expectation, otherwise false
+     */
+    public static boolean validateRequest(Instant periodStart, Instant periodEnd, long scale) {
+        long difference = Duration.between(periodStart, periodEnd).toMillis();
+        Interval intervalEnum = Interval.getNearestInMilliseconds(difference);
+        Interval scaleEnum = Interval.valueOf(scale);
+        EnumSet<Interval> possibleScales = getPossibleScales(intervalEnum);
+        boolean validScale = possibleScales.contains(scaleEnum);
+        return validScale && Interval.UNDEFINED != scaleEnum;
+    }
+
+    /**
      * Help message, displayed if the request contains invalid request parameters.
      *
      * @return the HTML formatted help message
@@ -48,7 +66,9 @@ public class RadarChartRequestValidator {
             Interval.FOUR_HOURS,
             Interval.EIGHT_HOURS,
             Interval.ONE_DAY,
-            Interval.ONE_WEEK
+            Interval.ONE_WEEK,
+            Interval.ONE_MONTH,
+            Interval.ONE_YEAR
         };
 
         String liBegin = "<li>";
@@ -144,6 +164,20 @@ public class RadarChartRequestValidator {
                     Interval.FOUR_HOURS,
                     Interval.EIGHT_HOURS,
                     Interval.ONE_DAY);
+
+        } else if (interval == Interval.ONE_MONTH) {
+            possibleScales = EnumSet.of(
+                    Interval.ONE_HOUR,
+                    Interval.TWO_HOURS,
+                    Interval.FOUR_HOURS,
+                    Interval.EIGHT_HOURS,
+                    Interval.ONE_DAY);
+
+        } else if (interval == Interval.ONE_YEAR) {
+            possibleScales = EnumSet.of(
+                    Interval.ONE_DAY,
+                    Interval.ONE_WEEK,
+                    Interval.ONE_MONTH);
 
         } else {
             possibleScales = EnumSet.noneOf(Interval.class);

@@ -7,14 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.sql.DataSource;
 
+import com.remal.signaltrading.api.converter.InstantConverter;
 import com.remal.signaltrading.api.model.RadarChart;
 import com.remal.signaltrading.api.model.SqlParam;
 import com.remal.signaltrading.api.validator.RadarChartRequestValidator;
@@ -69,7 +68,7 @@ public class RadarChartController {
                                                @RequestParam long interval,
                                                @RequestParam long scale) {
 
-        log.info("serving a request, ticker: {}, interval: {}, scale: {}", ticker, interval, scale);
+        log.info("new REST request to 'radar', ticker: {}, interval: {}, scale: {}", ticker, interval, scale);
 
         if (RadarChartRequestValidator.validateRequest(interval, scale)) {
             List<SqlParam> sqlParams = generateSqlParams(interval, scale);
@@ -88,9 +87,46 @@ public class RadarChartController {
         }
     }
 
+    /**
+     * Radar chart data provider endpoint.
+     *
+     * @param ticker product identifier number
+     * @param start start of the period
+     * @param end end of the period
+     * @param scale cale in seconds
+     * @return data what can be used to generate chart
+     */
+    @RequestMapping("/radar-with-interval")
+    public ResponseEntity<Resource> radarChart(@RequestParam String ticker,
+                                               @RequestParam Instant start,
+                                               @RequestParam Instant end,
+                                               @RequestParam long scale) {
+
+        log.info("new REST request to 'radar-with-interval', ticker: {}, period start: {}, period end: {}, scale: {}",
+                ticker,
+                InstantConverter.toHumanReadableString(start),
+                InstantConverter.toHumanReadableString(end),
+                scale);
+
+        if (RadarChartRequestValidator.validateRequest(start, end, scale)) {
+            List<SqlParam> sqlParams = generateSqlParams(start, end, scale);
+            RadarChart radarChart = executeQueries(ticker, sqlParams);
+            String csv = radarChartToCvs(radarChart);
+            HttpHeaders headers = getHttpHeaders(ticker);
+            ByteArrayResource resource = new ByteArrayResource(csv.getBytes());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } else {
+            Resource resource = new ByteArrayResource(RadarChartRequestValidator.getHelpMessage().getBytes());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resource);
+        }
+    }
+
     private HttpHeaders getHttpHeaders(String ticker) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss").withZone(ZoneId.of("UTC"));
-        String filename = ticker + "_" + formatter.format(Instant.now()) + ".csv";
+        String filename = ticker + "_" + InstantConverter.toFilename(Instant.now()) + ".csv";
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
@@ -110,14 +146,13 @@ public class RadarChartController {
             dataPoint -> sb
                     .append(dataPoint.getLabel())
                     .append(dataSeparator)
-                    .append(Objects.isNull(dataPoint.getPrice()) ? "" : dataPoint.getPrice())
+                    .append(Objects.isNull(dataPoint.getPrice()) ? "0" : dataPoint.getPrice())
                     .append(lineSeparator)
         );
         return sb.toString();
     }
 
     private RadarChart executeQueries(String ticker, List<SqlParam> sqlParams) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
         RadarChart.RadarChartBuilder radarChartBuilder = RadarChart.builder().title(ticker);
         String sql = String.format(
                 "SELECT AVG(closing_price) FROM %s WHERE trade_date >= ? AND trade_date < ?",
@@ -136,7 +171,7 @@ public class RadarChartController {
 
                     radarChartBuilder.dataPoint(
                             RadarChart.DataPoint.builder()
-                                    .label(formatter.format(sqlParam.getStartOfPeriod()))
+                                    .label(InstantConverter.toHumanReadableString(sqlParam.getStartOfPeriod()))
                                     .price(price)
                                     .build());
                 }
@@ -158,6 +193,22 @@ public class RadarChartController {
         Instant startOfPeriod = endOfPeriod.minus(interval, ChronoUnit.SECONDS);
         while (startOfPeriod.isBefore(endOfPeriod)) {
             sqlParams.add(SqlParam.builder().startOfPeriod(startOfPeriod).endOfPeriod(endOfPeriod).build());
+            startOfPeriod = startOfPeriod.plus(scale, ChronoUnit.SECONDS);
+        }
+
+        log.debug("{} sql queries will be executed", sqlParams.size());
+        return sqlParams;
+    }
+
+    private List<SqlParam> generateSqlParams(Instant startOfPeriod, Instant endOfPeriod, long scale) {
+        List<SqlParam> sqlParams = new ArrayList<>();
+        while (startOfPeriod.isBefore(endOfPeriod)) {
+            sqlParams.add(
+                    SqlParam.builder()
+                            .startOfPeriod(startOfPeriod)
+                            .endOfPeriod(startOfPeriod.plus(scale - 1, ChronoUnit.SECONDS))
+                            .build());
+
             startOfPeriod = startOfPeriod.plus(scale, ChronoUnit.SECONDS);
         }
 

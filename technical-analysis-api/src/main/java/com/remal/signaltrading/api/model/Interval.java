@@ -27,7 +27,8 @@ public enum Interval {
     EIGHT_HOURS(Interval.HOUR * 8),
     ONE_DAY(Interval.DAY),
     ONE_WEEK(Interval.DAY * 7),
-    ONE_MONTH(Interval.DAY * 30);
+    ONE_MONTH(Interval.DAY * 30),
+    ONE_YEAR(Interval.DAY * 366);
 
     private static final long MINUTE = 60L;
     private static final long HOUR = 60 * MINUTE;
@@ -54,6 +55,72 @@ public enum Interval {
             interval = Interval.UNDEFINED;
         }
         return interval;
+    }
+
+    /**
+     * Converts the given value into the nearest interval.
+     *
+     * @param seconds the value in seconds
+     * @return the nearest interval
+     */
+    public static Interval getNearestInSeconds(long seconds) {
+        if (seconds <= ONE_MINUTE.getSeconds()) {
+            return ONE_MINUTE;
+
+        } else if (seconds <= FIVE_MINUTES.getSeconds()) {
+            return FIVE_MINUTES;
+
+        } else if (seconds <= FIFTEEN_MINUTES.getSeconds()) {
+            return FIFTEEN_MINUTES;
+
+        } else if (seconds <= THIRTY_MINUTES.getSeconds()) {
+            return THIRTY_MINUTES;
+
+        } else if (seconds <= ONE_HOUR.getSeconds()) {
+            return ONE_HOUR;
+
+        } else if (seconds <= TWO_HOURS.getSeconds()) {
+            return TWO_HOURS;
+
+        } else if (seconds <= FOUR_HOURS.getSeconds()) {
+            return FOUR_HOURS;
+
+        } else if (seconds <= EIGHT_HOURS.getSeconds()) {
+            return EIGHT_HOURS;
+
+        } else if (seconds <= ONE_DAY.getSeconds()) {
+            return ONE_DAY;
+
+        } else if (seconds <= ONE_WEEK.getSeconds()) {
+            return ONE_WEEK;
+
+        } else if (seconds <= ONE_MONTH.getSeconds()) {
+            return ONE_MONTH;
+
+        } else if (seconds <= ONE_YEAR.getSeconds()) {
+            return ONE_YEAR;
+        } else {
+            return UNDEFINED;
+        }
+    }
+
+    /**
+     * Converts the given value into the nearest interval.
+     *
+     * @param milliseconds the value in milliseconds
+     * @return the nearest interval
+     */
+    public static Interval getNearestInMilliseconds(long milliseconds) {
+        return getNearestInSeconds(milliseconds / 1000);
+    }
+
+    /**
+     * Get the enum value in millisecond.
+     *
+     * @return value in millisecond
+     */
+    public long getMilliseconds() {
+        return getSeconds() * 1000;
     }
 
     @Override
