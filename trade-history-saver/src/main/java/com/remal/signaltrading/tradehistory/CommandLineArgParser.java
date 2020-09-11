@@ -60,7 +60,7 @@ public class CommandLineArgParser implements CommandLineRunner {
         switch (args[0]) {
             case "candles":
                 Arrays.stream(tickers).forEach(
-                        t -> taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject(t), delay));
+                    t -> taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject(t), delay));
                 break;
 
             case "accounts":
