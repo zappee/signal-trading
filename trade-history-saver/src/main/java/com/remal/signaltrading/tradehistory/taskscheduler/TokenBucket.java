@@ -39,7 +39,7 @@ public class TokenBucket {
         long now = System.currentTimeMillis();
         long runningTasks = tokens.stream().filter(token -> token.getFinishedAt() == null).count();
         long completedWithinPeriod = tokens.stream()
-                .filter(token -> (token.getFinishedAt() != null) && (token.getFinishedAt() >= now - lengthOfPeriod))
+                .filter(token -> (token.getFinishedAt() != null) && (token.getFinishedAt() > now - lengthOfPeriod))
                 .count();
 
         log.trace("running: {}, completed: {}, bucket: {}", runningTasks, completedWithinPeriod, tokens.toString());
