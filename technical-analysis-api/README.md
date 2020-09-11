@@ -53,9 +53,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 Example charts:
-[daily radar chart with 1h scale](docs/example-chatrs/ETH-EUR%20daily%20radar%20chart.png)
 
-[weekly radar chart shows trends in price and volume within days (from Monday to Sunday](docs/aaa.png)
-
-[daily historical prices with 1h scale](docs/example-chatrs/ETH-EUR%20daily%20line%20chart.png)
-
+* daily radar chart with 1h scale: ![](docs/example-chatrs/ETH-EUR%20daily%20radar%20chart.png)
+* weekly radar chart shows trends in price and volume within days (from Monday to Sunday: ![](docs/aaa.png)
+* daily historical prices with 1h scale: ![](docs/example-chatrs/ETH-EUR%20daily%20line%20chart.png)
