@@ -1,61 +1,73 @@
-package com.remal.signaltrading.api.cotroller;
+package com.remal.signaltrading.api.validator;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
+import com.remal.signaltrading.api.model.Interval;
 
 /**
- * Interval definitions for charts.
+ * API request validator. It validates the incoming interval and scale values
+ * whether they are insync.
  *
  * @author arnold.somogyi@gmail.com
  */
-@Getter
-@AllArgsConstructor
-public enum Interval {
+public class RadarChartRequestValidator {
 
-    UNDEFINED(0),
-    ONE_MINUTE(Interval.MINUTE),
-    FIVE_MINUTES(Interval.MINUTE * 5),
-    FIFTEEN_MINUTES(Interval.MINUTE * 15),
-    THIRTY_MINUTES(Interval.MINUTE * 30),
-    ONE_HOUR(Interval.HOUR),
-    TWO_HOURS(Interval.HOUR * 2),
-    FOUR_HOURS(Interval.HOUR * 4),
-    EIGHT_HOURS(Interval.HOUR * 8),
-    ONE_DAY(Interval.DAY),
-    ONE_WEEK(Interval.DAY * 7),
-    ONE_MONTH(Interval.DAY * 30);
-
-    private static final long MINUTE = 60L;
-    private static final long HOUR = 60 * MINUTE;
-    private static final long DAY = 24 * HOUR;
-    private static final Map<Long, Interval> intervals = new HashMap<>();
-
-    private final long seconds;
-
-    static {
-        for (Interval interval : Interval.values()) {
-            intervals.put(interval.getSeconds(), interval);
-        }
+    /**
+     * Validates the value of the incoming interval and scale fields.
+     *
+     * @param interval interval in seconds
+     * @param scale scale in seconds
+     * @return true if the given values are in sync
+     */
+    public static boolean validateRequest(long interval, long scale) {
+        Interval intervalEnum = Interval.valueOf(interval);
+        Interval scaleEnum = Interval.valueOf(scale);
+        EnumSet<Interval> possibleScales = getPossibleScales(intervalEnum);
+        boolean validScale = possibleScales.contains(scaleEnum);
+        return validScale && Interval.UNDEFINED != scaleEnum;
     }
 
     /**
-     * Constructor.
+     * Help message, displayed if the request contains invalid request parameters.
      *
-     * @param seconds enum representation in seconds
-     * @return the enum
+     * @return the HTML formatted help message
      */
-    public static Interval valueOf(long seconds) {
-        Interval interval = intervals.get(seconds);
-        if (Objects.isNull(interval)) {
-            interval = Interval.UNDEFINED;
-        }
-        return interval;
+    public static String getHelpMessage() {
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of("UTC"));
+        Interval[] supportedIntervals = {
+            Interval.FIVE_MINUTES,
+            Interval.FIFTEEN_MINUTES,
+            Interval.THIRTY_MINUTES,
+            Interval.ONE_HOUR,
+            Interval.TWO_HOURS,
+            Interval.FOUR_HOURS,
+            Interval.EIGHT_HOURS,
+            Interval.ONE_DAY,
+            Interval.ONE_WEEK
+        };
+
+        String liBegin = "<li>";
+        String liEnd = "</il>";
+
+        StringBuilder sb = new StringBuilder()
+                .append("<p style=\"color:red; font-size:25px;\">")
+                .append(formatter.format(Instant.now())).append(" (UTC) - Invalid interval or scale.")
+                .append("</p>")
+                .append("<p>Possible values: </p>")
+                .append("<ul>");
+
+        Arrays.stream(supportedIntervals).forEach(interval ->
+                sb.append(liBegin).append(interval).append(": ").append(getPossibleScales(interval)).append(liEnd)
+        );
+
+        sb.append("</ul>");
+
+        return sb.toString();
     }
 
     /**
@@ -64,7 +76,7 @@ public enum Interval {
      * @param interval value of the chart interval
      * @return possible scales belong to the given interval
      */
-    public static EnumSet<Interval> getPossibleScales(Interval interval) {
+    private static EnumSet<Interval> getPossibleScales(Interval interval) {
         EnumSet<Interval> possibleScales;
 
         if (interval == Interval.FIVE_MINUTES) {
@@ -136,12 +148,12 @@ public enum Interval {
         } else {
             possibleScales = EnumSet.noneOf(Interval.class);
         }
-
         return possibleScales;
     }
 
-    @Override
-    public String toString() {
-        return name() + " (" + getSeconds() + ")";
+    /**
+     * Utility classes should not have public constructor.
+     */
+    private RadarChartRequestValidator() {
     }
 }
