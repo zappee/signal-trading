@@ -2,11 +2,10 @@ package com.remal.signaltrading.api.validator;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.remal.signaltrading.api.converter.InstantConverter;
 import com.remal.signaltrading.api.model.Interval;
 
 /**
@@ -15,7 +14,7 @@ import com.remal.signaltrading.api.model.Interval;
  *
  * @author arnold.somogyi@gmail.com
  */
-public class RadarChartRequestValidator {
+public class RequestValidator {
 
     /**
      * Validates the value of the incoming interval and scale fields.
@@ -24,12 +23,11 @@ public class RadarChartRequestValidator {
      * @param scale scale in seconds
      * @return true if the given values are in sync
      */
-    public static boolean validateRequest(long interval, long scale) {
+    public static boolean validateInterval(long interval, long scale) {
         Interval intervalEnum = Interval.valueOf(interval);
         Interval scaleEnum = Interval.valueOf(scale);
         EnumSet<Interval> possibleScales = getPossibleScales(intervalEnum);
-        boolean validScale = possibleScales.contains(scaleEnum);
-        return validScale && Interval.UNDEFINED != scaleEnum;
+        return possibleScales.contains(scaleEnum) && Interval.UNDEFINED != scaleEnum;
     }
 
     /**
@@ -40,13 +38,24 @@ public class RadarChartRequestValidator {
      * @param scale scale in seconds
      * @return true if the size of the given timeframe is less or equals with the expectation, otherwise false
      */
-    public static boolean validateRequest(Instant periodStart, Instant periodEnd, long scale) {
+    public static boolean validatePeriod(Instant periodStart, Instant periodEnd, long scale) {
         long difference = Duration.between(periodStart, periodEnd).toMillis();
-        Interval intervalEnum = Interval.getNearestInMilliseconds(difference);
+        Interval intervalEnum = Interval.getNearestInMillis(difference);
         Interval scaleEnum = Interval.valueOf(scale);
         EnumSet<Interval> possibleScales = getPossibleScales(intervalEnum);
-        boolean validScale = possibleScales.contains(scaleEnum);
-        return validScale && Interval.UNDEFINED != scaleEnum;
+        return possibleScales.contains(scaleEnum) && Interval.UNDEFINED != scaleEnum;
+    }
+
+    /**
+     * Validates the given scale.
+     *
+     * @param scale scale in seconds
+     * @return true if the scale is in the range
+     */
+    public static boolean validateWeeks(long scale) {
+        Interval scaleEnum = Interval.valueOf(scale);
+        EnumSet<Interval> possibleScales = getPossibleScales(Interval.ONE_DAY);
+        return possibleScales.contains(scaleEnum) && Interval.UNDEFINED != scaleEnum;
     }
 
     /**
@@ -55,8 +64,6 @@ public class RadarChartRequestValidator {
      * @return the HTML formatted help message
      */
     public static String getHelpMessage() {
-        String pattern = "yyyy-MM-dd HH:mm:ss";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of("UTC"));
         Interval[] supportedIntervals = {
             Interval.FIVE_MINUTES,
             Interval.FIFTEEN_MINUTES,
@@ -76,7 +83,8 @@ public class RadarChartRequestValidator {
 
         StringBuilder sb = new StringBuilder()
                 .append("<p style=\"color:red; font-size:25px;\">")
-                .append(formatter.format(Instant.now())).append(" (UTC) - Invalid interval or scale.")
+                .append(InstantConverter.toHumanReadableString(Instant.now()))
+                .append(" (UTC) - Invalid interval or scale.")
                 .append("</p>")
                 .append("<p>Possible values: </p>")
                 .append("<ul>");
@@ -188,6 +196,6 @@ public class RadarChartRequestValidator {
     /**
      * Utility classes should not have public constructor.
      */
-    private RadarChartRequestValidator() {
+    private RequestValidator() {
     }
 }

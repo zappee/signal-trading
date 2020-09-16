@@ -1,6 +1,7 @@
 package com.remal.signaltrading.api.model;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 import lombok.Builder;
@@ -15,20 +16,21 @@ import lombok.Singular;
  */
 @Builder
 @Getter
-public class RadarChart {
+public class SingleColumnChart {
 
     private String title;
 
-    @Singular
-    private List<DataPoint> dataPoints;
+    @Singular("dataSeries")
+    private List<DataSeries> dataSeries;
 
     /**
      * Inner class for chart data points.
      */
     @Builder
     @Getter
-    public static class DataPoint {
+    public static class DataSeries {
         private String label;
+        private Instant startOfPeriod;
         private BigDecimal price;
     }
 }

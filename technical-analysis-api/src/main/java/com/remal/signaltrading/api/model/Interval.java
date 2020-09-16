@@ -107,20 +107,11 @@ public enum Interval {
     /**
      * Converts the given value into the nearest interval.
      *
-     * @param milliseconds the value in milliseconds
+     * @param millis the value in milliseconds
      * @return the nearest interval
      */
-    public static Interval getNearestInMilliseconds(long milliseconds) {
-        return getNearestInSeconds(milliseconds / 1000);
-    }
-
-    /**
-     * Get the enum value in millisecond.
-     *
-     * @return value in millisecond
-     */
-    public long getMilliseconds() {
-        return getSeconds() * 1000;
+    public static Interval getNearestInMillis(long millis) {
+        return getNearestInSeconds(millis / 1000);
     }
 
     @Override

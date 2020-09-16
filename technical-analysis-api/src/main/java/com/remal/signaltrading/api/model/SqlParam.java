@@ -16,6 +16,7 @@ import lombok.ToString;
 @Builder
 @ToString
 public class SqlParam {
+
     private Instant startOfPeriod;
     private Instant endOfPeriod;
 }

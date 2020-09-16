@@ -1,7 +1,7 @@
 # API provides data for technical analysis
 
 ## 1) Overview
-This API exports data to CVS file based on the given criterias.
+This API exports data to the CVS file based on the given criteria.
 The exported data can be used to generated different charts in Microsoft Excel.
 
 ## 2) Database configuration (PostgreSQL)
@@ -11,7 +11,7 @@ If you do not have access to the Crypto Exchange and you are not able to start t
 The export is a PostgreSQL database export file, you can load it with the following command: `psql -U <username> crypto < technical-analysis-api/docs/database-export/crypto-export_2020.09.11.pgsql`.
 ## 3) Java Build
 ~~~~
-$ PATH=/usr/java/jdk-11.0.4/bin:$PATH
+$ PATH=/usr/java/jdk-12.0.2/bin:$PATH
 $ cd signal-trading/technical-analysis-api
 $ mvn clean package
 ~~~~
@@ -39,30 +39,39 @@ The application needs to be configured properly before it is started. The config
 ### 4.3) Run the application
 
 ~~~~
-$ PATH=/usr/java/jdk-11.0.4/bin:$PATH
+$ PATH=/usr/java/jdk-12.0.2/bin:$PATH
 $ cd signal-trading/technical-analysis-api
 $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 ~~~~
 
 ## 5) REST Endpoints
-### 5.1) Radar chart
+### 5.1) Historical average price
 #### 5.1.1) With interval
-* URL: `GET /api/radar`
+* URL: `GET /api/single`
 * Parameters:
     * ticker: the name of the product
     * interval: requested interval back in time from now
     * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/radar?ticker=ETH-EUR&interval=300&scale=60](http://localhost:8081/api/radar?ticker=ETH-EUR&interval=300&scale=60)
+* Example request: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 #### 5.1.2) With period start and end
-* URL: `GET /api/radar-with-interval`
+* URL: `GET /api/radar-with-period`
 * Parameters:
     * ticker: the name of the product
     * start: start of the period
     * end: end of the period
     * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/radar-with-interval?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400](http://localhost:8081/api/radar-with-interval?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400)
+* Example request: `GET` [http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400](http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400)
+* Responses: HTTP 400 or HTTP 200 with the generated CVS file
+
+#### 5.1.3) Weekly average price with 7 timelines for each day of the week
+* URL: `GET /api/radar-weekly`
+* Parameters:
+    * ticker: the name of the product
+    * weeks: number of weeks to analyze back from now
+    * scale: the granularity of the data
+* Example request: `GET` [http://localhost:8081/api/weekly?ticker=ETH-EUR&weeks=3&scale=1800](http://localhost:8081/api/weekly?ticker=ETH-EUR&weeks=3&scale=1800)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 ## 6) Example charts
