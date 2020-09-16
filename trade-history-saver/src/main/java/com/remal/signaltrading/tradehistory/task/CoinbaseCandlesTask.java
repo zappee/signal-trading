@@ -58,9 +58,9 @@ public class CoinbaseCandlesTask implements Runnable {
      */
     @Override
     public void run() {
-        tokenBucket.consume(id).ifPresentOrElse(
-            token -> callRestAndPersistResult(token),
-            () -> log.trace("{} task has been skipped", id)
+        tokenBucket.acquire(id).ifPresentOrElse(
+                this::callRestAndPersistResult,
+                () -> log.trace("{} task has been skipped", id)
         );
     }
 
@@ -151,16 +151,14 @@ public class CoinbaseCandlesTask implements Runnable {
     }
 
     private void createTable() {
-        String sql = new StringBuilder()
-                .append("CREATE TABLE %s (")
-                .append("    trade_date TIMESTAMP PRIMARY KEY,")
-                .append("    lowest_price DECIMAL(11, 6) NOT NULL,")
-                .append("    highest_price DECIMAL(11, 6) NOT NULL,")
-                .append("    opening_price DECIMAL(11, 6) NOT NULL,")
-                .append("    closing_price DECIMAL(11, 6) NOT NULL,")
-                .append("    volume DECIMAL(14,8) NOT NULL")
-                .append(")")
-                .toString();
+        String sql = "CREATE TABLE %s ("
+                + "trade_date TIMESTAMP PRIMARY KEY,"
+                + "lowest_price DECIMAL(11, 6) NOT NULL,"
+                + "highest_price DECIMAL(11, 6) NOT NULL,"
+                + "opening_price DECIMAL(11, 6) NOT NULL,"
+                + "closing_price DECIMAL(11, 6) NOT NULL,"
+                + "volume DECIMAL(14,8) NOT NULL"
+                + ")";
         sql = String.format(sql, getTableName());
 
         try (Connection connection = dataSource.getConnection();

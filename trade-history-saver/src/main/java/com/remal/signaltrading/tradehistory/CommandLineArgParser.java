@@ -21,10 +21,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CommandLineArgParser implements CommandLineRunner {
 
-    private ThreadPoolTaskScheduler taskScheduler;
-    private ObjectProvider<CoinbaseCandlesTask> coinbaseCandlesPrototype;
-    private CoinbaseAccountsTask coinbaseAccountsTask;
-    private CoinbaseProductsTask coinbaseProductsTask;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    private final ObjectProvider<CoinbaseCandlesTask> coinbaseCandlesPrototype;
+    private final CoinbaseAccountsTask coinbaseAccountsTask;
+    private final CoinbaseProductsTask coinbaseProductsTask;
 
     @Value("${exchange.coinbase.scheduler-delay}")
     private long delay;

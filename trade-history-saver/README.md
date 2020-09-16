@@ -12,7 +12,7 @@ Each ticker has an own database table therefore trade histories are saved separa
 
 ## 3) Java Build
 ~~~~
-$ PATH=/usr/java/jdk-11.0.4/bin:$PATH
+$ PATH=/usr/java/jdk-12.0.2/bin:$PATH
 $ cd signal-trading/trade-history-saver
 $ mvn clean package
 ~~~~
@@ -45,7 +45,7 @@ The application needs to be configured properly before it is started. The config
 ### 4.3) Run the application
 
 ~~~~
-$ PATH=/usr/java/jdk-11.0.4/bin:$PATH
+$ PATH=/usr/java/jdk-12.0.2/bin:$PATH
 $ cd signal-trading/trade-history-saver
 $ mvn org.springframework.boot:spring-boot-maven-plugin:run -Dspring-boot.run.arguments=<profile>
 ~~~~

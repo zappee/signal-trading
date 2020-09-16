@@ -21,7 +21,7 @@ public class ProductsService {
      */
     public static final String ENDPOINT = "/products";
 
-    private CoinbaseExchange exchange;
+    private final CoinbaseExchange exchange;
 
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public class ProductsService {
      */
     public List<Product> getProducts() {
         log.trace("Getting products...");
-        List<Product> products = exchange.getAsList(ENDPOINT, new ParameterizedTypeReference<Product[]>() { });
+        List<Product> products = exchange.getAsList(ENDPOINT, new ParameterizedTypeReference<>() { });
         log.trace("Number of products: " + products.size());
         if (!products.isEmpty()) {
             log.debug(products.stream().map(Product::toString).collect(Collectors.joining()));

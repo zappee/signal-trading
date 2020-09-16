@@ -18,17 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TokenBucket {
 
-    private static Vector<Token> tokens = new Vector<>();
+    private static final Vector<Token> tokens = new Vector<>();
 
     /**
      * Coinbase public endpoints allows 3 requests per second
      */
-    private long lengthOfPeriod;
+    private final long lengthOfPeriod;
 
     /**
      * Coinbase public endpoints allows 3 requests per second
      */
-    private long maxRequestsWithinPeriod;
+    private final long maxRequestsWithinPeriod;
 
     /**
      * Constructor.
@@ -41,7 +41,13 @@ public class TokenBucket {
         this.maxRequestsWithinPeriod = maxRequestsWithinPeriod;
     }
 
-    public synchronized Optional<String> consume(String taskId) {
+    /**
+     * Acquires a single execution permit from the given task.
+     *
+     * @param taskId identifier of the calling task
+     * @return task ID belongs to the given task
+     */
+    public synchronized Optional<String> acquire(String taskId) {
         long now = System.currentTimeMillis();
         long runningTasks = tokens.stream().filter(token -> token.getFinishedAt() == null).count();
         long completedWithinPeriod = tokens.stream()
@@ -59,6 +65,11 @@ public class TokenBucket {
         return Optional.empty();
     }
 
+    /**
+     * Freed the given execution permit.
+     *
+     * @param token execution permit token
+     */
     public synchronized void release(String token) {
         long now = System.currentTimeMillis();
         tokens.stream()

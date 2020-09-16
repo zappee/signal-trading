@@ -18,7 +18,7 @@ public enum Granularity {
     SIX_HOURS(21600),
     ONE_DAY(86400);
 
-    private long value;
+    private final long value;
 
     Granularity(long value) {
         this.value = value;
