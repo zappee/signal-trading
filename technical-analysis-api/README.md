@@ -45,9 +45,30 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 ~~~~
 
 ## 5) REST Endpoints
-### 5.1) Historical average price
-#### 5.1.1) With interval
-* URL: `GET /api/single`
+### 5.1) API parameters
+* ticker: Only tickers, supported by Coinbase Pro is acceptable. For example: BTC-EUR, ETH-EUR, XRP-USD, etc. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application.
+* interval, scale: Value in seconds.
+
+    |supported|parameter value|
+    |---|---|
+    |1 minute|60|
+    |5 minutes|300|
+    |15 minutes|900|
+    |30 minutes|1800|
+    |1 hour|3600|
+    |2 hours|7200|
+    |4 hours|14400|
+    |8 hours|28800|
+    |1 day|86400|
+    |1 week|604800|
+    |1 month|2592000|
+    |1 year|31622400|
+
+* period start and end: timestamp in UTC timezone, format: `yyyy-mm-ddThh.mm.ss`
+
+### 5.2) Historical average price
+#### 5.2.1) With interval
+* URL: `GET /api/fix-interval`
 * Parameters:
     * ticker: the name of the product
     * interval: requested interval back in time from now
@@ -55,23 +76,23 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 * Example request: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
-#### 5.1.2) With period start and end
-* URL: `GET /api/radar-with-period`
+#### 5.2.2) With period start and end
+* URL: `GET /api/period`
 * Parameters:
     * ticker: the name of the product
     * start: start of the period
     * end: end of the period
     * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400](http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00Z&end=2020-12-31T23:59:59Z&scale=86400)
+* Example request: `GET` [http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00&end=2020-12-31T23:59:59&scale=86400](http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00&end=2020-12-31T23:59:59&scale=86400)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
-#### 5.1.3) Weekly average price with 7 timelines for each day of the week
-* URL: `GET /api/radar-weekly`
+#### 5.2.3) Weekly average price with 7 timelines for each day of the week
+* URL: `GET /api/weekly`
 * Parameters:
     * ticker: the name of the product
-    * weeks: number of weeks to analyze back from now
+    * day: any day in the week
     * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/weekly?ticker=ETH-EUR&weeks=3&scale=1800](http://localhost:8081/api/weekly?ticker=ETH-EUR&weeks=3&scale=1800)
+* Example request: `GET` [http://localhost:8081/api/weekly?ticker=ETH-EUR&day=2020-09-16&scale=1800](http://localhost:8081/api/weekly?ticker=ETH-EUR&day=2020-09-16&scale=1800)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 ## 6) Example charts

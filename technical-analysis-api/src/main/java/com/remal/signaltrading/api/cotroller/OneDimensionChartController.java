@@ -82,18 +82,18 @@ public class OneDimensionChartController extends ChartController {
      */
     @RequestMapping("/period")
     public ResponseEntity<Resource> period(@RequestParam String ticker,
-                                           @RequestParam Instant start,
-                                           @RequestParam Instant end,
+                                           @RequestParam String start,
+                                           @RequestParam String end,
                                            @RequestParam long scale) {
 
         log.info("REST request to period endpoint, ticker: {}, period start: {}, period end: {}, scale: {}",
-                ticker,
-                InstantConverter.toHumanReadableString(start),
-                InstantConverter.toHumanReadableString(end),
-                scale);
+                ticker, start, end, scale);
 
-        if (RequestValidator.validatePeriod(start, end, scale)) {
-            List<SqlParam> sqlParams = generateSqlParams(start, end, scale);
+        Instant startInstant = InstantConverter.fromTimestampString(start);
+        Instant endInstant = InstantConverter.fromTimestampString(end);
+
+        if (RequestValidator.validatePeriod(startInstant, endInstant, scale)) {
+            List<SqlParam> sqlParams = generateSqlParams(startInstant, endInstant, scale);
             return generateResponse(ticker, sqlParams);
         } else {
             Resource resource = new ByteArrayResource(RequestValidator.getHelpMessage().getBytes());
