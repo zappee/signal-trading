@@ -70,10 +70,13 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 #### 5.2.1) With interval
 * URL: `GET /api/fix-interval`
 * Parameters:
-    * ticker: the name of the product
-    * interval: requested interval back in time from now
-    * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60)
+    + ticker: the name of the product
+    + interval: requested interval back in time from now
+    + scale: the granularity of the data
+* Example requests:
+    + last hour with one minute timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60)
+    + last day with one minute timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=86400&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=86400&scale=60)
+    + last month with a daily timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=2592000&scale=86400](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=2592000&scale=86400)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 #### 5.2.2) With period start and end
