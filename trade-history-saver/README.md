@@ -2,7 +2,7 @@
 
 ## 1) Overview
 This application downloads trade data from CoinbasePro Crypto Exchange and store them in a database.
-Each ticker has an own database table therefore trade histories are saved separately per tickers.
+Each ticker has an own database table that means trade histories are saved separately per tickers.
 
 >A ticker symbol or stock symbol is an abbreviation used to uniquely identify publicly traded shares of a particular stock on a particular stock market. A stock symbol may consist of letters, numbers or a combination of both.
 
@@ -18,7 +18,7 @@ $ mvn clean package
 ~~~~
 
 ## 4) Run the application
-The application needs to be configured properly before it is started. The configuration file sits in the `signal-trading/trade-history-saver/src/main/resources` directory.
+The application needs to be configured properly before the first start. The application configuration file sits in the `signal-trading/trade-history-saver/src/main/resources` directory.
 
 ### 4.1) Configuration parameters, must be set before the first run
 
@@ -29,18 +29,18 @@ The application needs to be configured properly before it is started. The config
 |exchange.coinbase.passphrase|n/a|Passphrase will be provided by you to further secure your API access. CoinbasePro stores the salted hash of your passphrase for verification, but cannot recover the passphrase if you forget it.|
 |datasource.driver-class-name|org.postgresql.Driver|JDBC driver class name.|
 |datasource.url|jdbc:postgresql://localhost:5432/crypto|JDBC connection string.|
-|datasource.username|NA|Name for the login.Name for the database login.|
+|datasource.username|NA|Name for the database login.|
 |datasource.password|NA|Password for the connecting user.|
-|exchange.coinbase.tickers|NA|Tickers to download and store.|
+|exchange.coinbase.tickers|NA|Tickers to download.|
 
 ### 4.2) Advanced configuration parameters
 
 |name|default value|description|
-`|---|---|---|`
+|---|---|---|
 |exchange.coinbase.allowed-requests-within-period|2|CoinbasePro API endpoint has a custom rate limit by profile ID: 2 requests per second.|
 |exchange.coinbase.period-length|1000|CoinbasePro API endpoint has a custom rate limit by profile ID: 2 requests per second.|
 |exchange.coinbase.scheduler-delay|3000|The individual ticker downloaders are managed by a scheduler. They run parallel based on this configuration.|
-|logging.file.name=|not used|Application log to file.|
+|logging.file.name|not used|Application log to file.|
 
 ### 4.3) Run the application
 
