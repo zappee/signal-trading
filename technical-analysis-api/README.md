@@ -46,7 +46,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 
 ## 5) REST Endpoints
 ### 5.1) API parameters
-* ticker: Only tickers, supported by CoinbasePro is acceptable. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application. Example tickers: BTC-EUR, ETH-EUR, XRP-USD, etc.
+* ticker: Only tickers, supported by CoinbasePro is acceptable. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application. Example tickers: BTC-EUR, ETH-EUR, XRP-USD.
 * interval, scale: Value in seconds.
 
     |accepted|parameter value|
