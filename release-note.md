@@ -1,4 +1,4 @@
-# Release info of Signal-Trading project
+# Release info of the Signal-Trading project
 
 All notable changes to this project will be documented in this file.
 

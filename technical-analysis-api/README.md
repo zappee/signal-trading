@@ -2,12 +2,12 @@
 
 ## 1) Overview
 This API exports data to the CVS file based on the given criteria.
-The exported data can be used to generated different charts in Microsoft Excel.
+The exported data can be used to generate different charts in Microsoft Excel.
 
 ## 2) Database configuration (PostgreSQL)
 For more information please read the paragraph (2) in [coinbase pro trade history saver](../trade-history-saver) documentation.
 
-If you do not have access to the Crypto Exchange and you are not able to start the [coinbase pro trade history saver](../trade-history-saver) application in order to gather trading data, then you can use the saved database export file which contains almost one week trading data.
+Either if you do not have access to the CoinbasePro Crypto Exchange or you are not able to start the [coinbase pro trade history saver](../trade-history-saver) application in order to gather trading data, then you can use the saved database export file which contains almost two weeks trading data.
 The export is a PostgreSQL database export file, you can load it with the following command: `psql -U <username> crypto < technical-analysis-api/docs/database-export/crypto-export_2020.09.11.pgsql`.
 ## 3) Java Build
 ~~~~
@@ -46,7 +46,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 
 ## 5) REST Endpoints
 ### 5.1) API parameters
-* ticker: Only tickers, supported by Coinbase Pro is acceptable. For example: BTC-EUR, ETH-EUR, XRP-USD, etc. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application.
+* ticker: Only tickers, supported by Coinbase Pro is acceptable. For example BTC-EUR, ETH-EUR, XRP-USD, etc. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application.
 * interval, scale: Value in seconds.
 
     |supported|parameter value|
