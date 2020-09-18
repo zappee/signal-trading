@@ -157,6 +157,7 @@ public class RequestValidator {
 
         } else if (interval == Interval.ONE_DAY) {
             possibleScales = EnumSet.of(
+                    Interval.ONE_MINUTE,
                     Interval.FIVE_MINUTES,
                     Interval.FIFTEEN_MINUTES,
                     Interval.THIRTY_MINUTES,
