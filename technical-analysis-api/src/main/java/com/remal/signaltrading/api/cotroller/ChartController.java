@@ -11,10 +11,14 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import com.remal.signaltrading.api.converter.InstantConverter;
-import com.remal.signaltrading.api.model.SingleColumnChart;
+import com.remal.signaltrading.api.model.ChartDataSource;
 import com.remal.signaltrading.api.model.SqlParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Abstract class for common functions.
@@ -29,10 +33,10 @@ public abstract class ChartController {
 
     protected DataSource dataSource;
 
-    protected SingleColumnChart executeQueries(String ticker, List<SqlParam> sqlParams) {
-        SingleColumnChart.SingleColumnChartBuilder chartBuilder = SingleColumnChart.builder().title(ticker);
+    protected ChartDataSource executeQueries(String ticker, List<SqlParam> sqlParams) {
+        ChartDataSource.ChartDataSourceBuilder dataSourceBuilder = ChartDataSource.builder().title(ticker);
         String sql = String.format(
-                "SELECT AVG(closing_price) FROM %s WHERE trade_date >= ? AND trade_date < ?",
+                "SELECT AVG(closing_price), SUM(volume) FROM %s WHERE trade_date >= ? AND trade_date < ?",
                 getTableName(ticker));
 
         log.debug("executing sql queries...");
@@ -45,12 +49,14 @@ public abstract class ChartController {
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     BigDecimal price = rs.getBigDecimal(1);
+                    BigDecimal volume = rs.getBigDecimal(2);
 
-                    chartBuilder.dataSeries(
-                            SingleColumnChart.DataSeries.builder()
+                    dataSourceBuilder.dataSeries(
+                            ChartDataSource.DataSeries.builder()
                                     .label(InstantConverter.toHumanReadableString(sqlParam.getStartOfPeriod()))
                                     .startOfPeriod(sqlParam.getStartOfPeriod())
                                     .price(price)
+                                    .volume(volume)
                                     .build());
                 }
             } catch (SQLException e) {
@@ -58,8 +64,22 @@ public abstract class ChartController {
             }
         });
 
-        return chartBuilder.build();
+        return dataSourceBuilder.build();
     }
+
+    protected ResponseEntity<Resource> generateResponse(String ticker, List<SqlParam> sqlParams) {
+        ChartDataSource chart = executeQueries(ticker, sqlParams);
+        String csv = chartToCvs(chart);
+        HttpHeaders headers = getHttpHeaders(ticker);
+        ByteArrayResource resource = new ByteArrayResource(csv.getBytes());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+    protected abstract String chartToCvs(ChartDataSource chart);
 
     protected HttpHeaders getHttpHeaders(String ticker) {
         String filename = ticker + "_" + InstantConverter.toFilename(Instant.now()) + ".csv";

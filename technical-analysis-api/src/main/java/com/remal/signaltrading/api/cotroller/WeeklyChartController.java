@@ -18,15 +18,13 @@ import java.util.stream.LongStream;
 import javax.sql.DataSource;
 
 import com.remal.signaltrading.api.converter.InstantConverter;
-import com.remal.signaltrading.api.model.SingleColumnChart;
+import com.remal.signaltrading.api.model.ChartDataSource;
 import com.remal.signaltrading.api.model.SqlParam;
 import com.remal.signaltrading.api.validator.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -103,56 +101,44 @@ public class WeeklyChartController extends ChartController {
         return sqlParams;
     }
 
-    private ResponseEntity<Resource> generateResponse(String ticker, List<SqlParam> sqlParams) {
-        SingleColumnChart chart = executeQueries(ticker, sqlParams);
-        String csv = chartToCvs(chart);
-        HttpHeaders headers = getHttpHeaders(ticker);
-        ByteArrayResource resource = new ByteArrayResource(csv.getBytes());
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
-    }
-
-    private String chartToCvs(SingleColumnChart chart) {
-        List<SingleColumnChart.DataSeries> monday = chart.getDataSeries()
+    protected String chartToCvs(ChartDataSource chart) {
+        List<ChartDataSource.DataSeries> monday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)
                         .getDayOfWeek() == DayOfWeek.MONDAY).collect(Collectors.toList());
 
-        List<SingleColumnChart.DataSeries> tuesday = chart.getDataSeries()
+        List<ChartDataSource.DataSeries> tuesday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)
                         .getDayOfWeek() == DayOfWeek.TUESDAY).collect(Collectors.toList());
 
-        List<SingleColumnChart.DataSeries> wednesday = chart.getDataSeries()
+        List<ChartDataSource.DataSeries> wednesday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)
                         .getDayOfWeek() == DayOfWeek.WEDNESDAY).collect(Collectors.toList());
 
-        List<SingleColumnChart.DataSeries> thursday = chart.getDataSeries()
+        List<ChartDataSource.DataSeries> thursday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)
                         .getDayOfWeek() == DayOfWeek.THURSDAY).collect(Collectors.toList());
 
-        List<SingleColumnChart.DataSeries> friday = chart.getDataSeries()
+        List<ChartDataSource.DataSeries> friday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)
                         .getDayOfWeek() == DayOfWeek.FRIDAY).collect(Collectors.toList());
 
-        List<SingleColumnChart.DataSeries> saturday = chart.getDataSeries()
+        List<ChartDataSource.DataSeries> saturday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)
                         .getDayOfWeek() == DayOfWeek.SATURDAY).collect(Collectors.toList());
 
-        List<SingleColumnChart.DataSeries> sunday = chart.getDataSeries()
+        List<ChartDataSource.DataSeries> sunday = chart.getDataSeries()
                 .stream()
                 .filter(dataSeries -> dataSeries.getStartOfPeriod()
                         .atZone(ZoneOffset.UTC)

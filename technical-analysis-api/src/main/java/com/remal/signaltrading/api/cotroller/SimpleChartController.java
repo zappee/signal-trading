@@ -8,15 +8,13 @@ import java.util.Objects;
 import javax.sql.DataSource;
 
 import com.remal.signaltrading.api.converter.InstantConverter;
-import com.remal.signaltrading.api.model.SingleColumnChart;
+import com.remal.signaltrading.api.model.ChartDataSource;
 import com.remal.signaltrading.api.model.SqlParam;
 import com.remal.signaltrading.api.validator.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,14 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-public class OneDimensionChartController extends ChartController {
+public class SimpleChartController extends ChartController {
 
     /**
      * Initialize the data source.
      *
      * @param dataSource data source
      */
-    public OneDimensionChartController(DataSource dataSource) {
+    public SimpleChartController(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -101,26 +99,19 @@ public class OneDimensionChartController extends ChartController {
         }
     }
 
-    private ResponseEntity<Resource> generateResponse(String ticker, List<SqlParam> sqlParams) {
-        SingleColumnChart chart = executeQueries(ticker, sqlParams);
-        String csv = chartToCvs(chart);
-        HttpHeaders headers = getHttpHeaders(ticker);
-        ByteArrayResource resource = new ByteArrayResource(csv.getBytes());
+    protected String chartToCvs(ChartDataSource chart) {
+        StringBuilder sb = new StringBuilder()
+                .append(chart.getTitle()).append(LINE_SEPARATOR)
+                .append("date").append(DATA_SEPARATOR)
+                .append("price").append(DATA_SEPARATOR)
+                .append("volume").append(LINE_SEPARATOR);
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
-    }
-
-    private String chartToCvs(SingleColumnChart chart) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(chart.getTitle()).append(LINE_SEPARATOR);
         chart.getDataSeries().forEach(
             dataPoint -> sb
                     .append(dataPoint.getLabel())
                     .append(DATA_SEPARATOR)
-                    .append(Objects.isNull(dataPoint.getPrice()) ? "0" : dataPoint.getPrice())
+                    .append(Objects.isNull(dataPoint.getPrice()) ? "0" : dataPoint.getPrice()).append(DATA_SEPARATOR)
+                    .append(Objects.isNull(dataPoint.getVolume()) ? "0" : dataPoint.getVolume())
                     .append(LINE_SEPARATOR)
         );
         return sb.toString();
@@ -128,11 +119,13 @@ public class OneDimensionChartController extends ChartController {
 
     private List<SqlParam> generateSqlParams(long interval, long scale) {
         List<SqlParam> sqlParams = new ArrayList<>();
-        Instant endOfPeriod = Instant.now();
-        Instant startOfPeriod = endOfPeriod.minus(interval, ChronoUnit.SECONDS);
-        while (startOfPeriod.isBefore(endOfPeriod)) {
+        Instant now = Instant.now();
+        Instant startOfPeriod = now.minus(interval, ChronoUnit.SECONDS);
+        Instant endOfPeriod = startOfPeriod.plus(scale, ChronoUnit.SECONDS);
+        while (endOfPeriod.isBefore(now)) {
             sqlParams.add(SqlParam.builder().startOfPeriod(startOfPeriod).endOfPeriod(endOfPeriod).build());
-            startOfPeriod = startOfPeriod.plus(scale, ChronoUnit.SECONDS);
+            startOfPeriod = endOfPeriod;
+            endOfPeriod = startOfPeriod.plus(scale, ChronoUnit.SECONDS);
         }
 
         log.debug("{} sql queries will be executed", sqlParams.size());
