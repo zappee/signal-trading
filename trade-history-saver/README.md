@@ -36,7 +36,7 @@ The application needs to be configured properly before it is started. The config
 ### 4.2) Advanced configuration parameters
 
 |name|default value|description|
-|---|---|---|
+`|---|---|---|`
 |exchange.coinbase.allowed-requests-within-period|2|CoinbasePro API endpoint has a custom rate limit by profile ID: 2 requests per second.|
 |exchange.coinbase.period-length|1000|CoinbasePro API endpoint has a custom rate limit by profile ID: 2 requests per second.|
 |exchange.coinbase.scheduler-delay|3000|The individual ticker downloaders are managed by a scheduler. They run parallel based on this configuration.|

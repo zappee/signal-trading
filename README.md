@@ -1,5 +1,8 @@
 # Signal Trading on Crypto Exchanges
 
-### Projects
+### 1) Projects
 * [coinbase pro trade history saver](trade-history-saver)
-* [technical-analysis-api](technical-analysis-api)
+* [technical analysis API](technical-analysis-api)
+
+### 2) Release note
+* [release note](release-note.md)
