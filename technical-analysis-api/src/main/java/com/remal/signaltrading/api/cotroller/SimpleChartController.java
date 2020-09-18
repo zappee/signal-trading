@@ -120,7 +120,7 @@ public class SimpleChartController extends ChartController {
     private List<SqlParam> generateSqlParams(long interval, long scale) {
         List<SqlParam> sqlParams = new ArrayList<>();
         Instant now = Instant.now();
-        Instant startOfPeriod = now.minus(interval, ChronoUnit.SECONDS);
+        Instant startOfPeriod = now.minus(1, ChronoUnit.SECONDS).minus(interval, ChronoUnit.SECONDS);
         Instant endOfPeriod = startOfPeriod.plus(scale, ChronoUnit.SECONDS);
         while (endOfPeriod.isBefore(now)) {
             sqlParams.add(SqlParam.builder().startOfPeriod(startOfPeriod).endOfPeriod(endOfPeriod).build());
