@@ -18,7 +18,7 @@ $ mvn clean package
 ~~~~
 
 ## 4) Run the application
-The application needs to be configured properly before the first start. The application configuration file sits in the `signal-trading/trade-history-saver/src/main/resources` directory.
+The application needs to be configured properly before the first run. The application configuration file sits in the `signal-trading/trade-history-saver/src/main/resources` directory.
 
 ### 4.1) Configuration parameters, must be set before the first run
 
@@ -40,7 +40,7 @@ The application needs to be configured properly before the first start. The appl
 |exchange.coinbase.allowed-requests-within-period|2|CoinbasePro API endpoint has a custom rate limit by profile ID: 2 requests per second.|
 |exchange.coinbase.period-length|1000|CoinbasePro API endpoint has a custom rate limit by profile ID: 2 requests per second.|
 |exchange.coinbase.scheduler-delay|3000|The individual ticker downloaders are managed by a scheduler. They run parallel based on this configuration.|
-|logging.file.name|not used|Application log to file.|
+|logging.file.name|not applied|Path to the logfile.|
 
 ### 4.3) Run the application
 

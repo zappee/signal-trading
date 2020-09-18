@@ -1,14 +1,14 @@
 # API provides data for technical analysis
 
 ## 1) Overview
-This API exports data to the CVS file based on the given criteria.
-The exported data can be used to generate different charts in Microsoft Excel.
+This API exports data to the CVS files based on the given criteria.
+The exported data can be used to generate different kinds of charts in Microsoft Excel.
 
 ## 2) Database configuration (PostgreSQL)
 For more information please read the paragraph (2) in [coinbase pro trade history saver](../trade-history-saver) documentation.
 
-Either if you do not have access to the CoinbasePro Crypto Exchange or you are not able to start the [coinbase pro trade history saver](../trade-history-saver) application in order to gather trading data, then you can use the saved database export file which contains almost two weeks trading data.
-The export is a PostgreSQL database export file, you can load it with the following command: `psql -U <username> crypto < technical-analysis-api/docs/database-export/crypto-export_2020.09.11.pgsql`.
+Either you do not have access to the CoinbasePro Crypto Exchange or you are not able to start the [coinbase pro trade history saver](../trade-history-saver) application in order to gather trading data, then you can use the saved database export file which contains almost two weeks trading data.
+The export is a PostgreSQL database export file, you can load it with the following command: `psql -U <username> crypto < technical-analysis-api/docs/database-export/crypto-export.pgsql`.
 ## 3) Java Build
 ~~~~
 $ PATH=/usr/java/jdk-12.0.2/bin:$PATH
@@ -17,7 +17,7 @@ $ mvn clean package
 ~~~~
 
 ## 4) Run the application
-The application needs to be configured properly before it is started. The configuration file sits in the `signal-trading/technical-analysis-api/src/main/resources` directory.
+The application needs to be configured properly before the first run. The application configuration file sits in the `signal-trading/technical-analysis-api/src/main/resources` directory.
 
 
 ### 4.1) Configuration parameters, must be set before the first run
@@ -34,7 +34,7 @@ The application needs to be configured properly before it is started. The config
 
 |name|default value|description|
 |---|---|---|
-|logging.file.name=|not used|Application log to file.|
+|logging.file.name|not applied|Path to the logfile.|
 
 ### 4.3) Run the application
 
@@ -46,10 +46,10 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 
 ## 5) REST Endpoints
 ### 5.1) API parameters
-* ticker: Only tickers, supported by Coinbase Pro is acceptable. For example BTC-EUR, ETH-EUR, XRP-USD, etc. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application.
+* ticker: Only tickers, supported by CoinbasePro is acceptable. You can get the list of the supported tickers with the [trade-history-saver](../trade-history-saver) application. Example tickers: BTC-EUR, ETH-EUR, XRP-USD, etc.
 * interval, scale: Value in seconds.
 
-    |supported|parameter value|
+    |accepted|parameter value|
     |---|---|
     |1 minute|60|
     |5 minutes|300|
@@ -66,7 +66,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 
 * period start and end: timestamp in UTC timezone, format: `yyyy-mm-ddThh.mm.ss`
 
-### 5.2) Historical average price
+### 5.2) Historical average price API
 #### 5.2.1) With interval
 * URL: `GET /api/fix-interval`
 * Parameters:
@@ -86,7 +86,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 * Example request: `GET` [http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00&end=2020-12-31T23:59:59&scale=86400](http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00&end=2020-12-31T23:59:59&scale=86400)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
-#### 5.2.3) Weekly average price with 7 timelines for each day of the week
+#### 5.2.3) Weekly average price with 7 timelines for each day of the week API
 * URL: `GET /api/weekly`
 * Parameters:
     * ticker: the name of the product
