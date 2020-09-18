@@ -16,7 +16,7 @@ import lombok.Singular;
  */
 @Builder
 @Getter
-public class SingleColumnChart {
+public class ChartDataSource {
 
     private String title;
 
@@ -32,5 +32,6 @@ public class SingleColumnChart {
         private String label;
         private Instant startOfPeriod;
         private BigDecimal price;
+        private BigDecimal volume;
     }
 }
