@@ -167,6 +167,8 @@ public class RequestValidator {
 
         } else if (interval == Interval.ONE_WEEK) {
             possibleScales = EnumSet.of(
+                    Interval.FIFTEEN_MINUTES,
+                    Interval.THIRTY_MINUTES,
                     Interval.ONE_HOUR,
                     Interval.TWO_HOURS,
                     Interval.FOUR_HOURS,
@@ -175,6 +177,8 @@ public class RequestValidator {
 
         } else if (interval == Interval.ONE_MONTH) {
             possibleScales = EnumSet.of(
+                    Interval.FIFTEEN_MINUTES,
+                    Interval.THIRTY_MINUTES,
                     Interval.ONE_HOUR,
                     Interval.TWO_HOURS,
                     Interval.FOUR_HOURS,
