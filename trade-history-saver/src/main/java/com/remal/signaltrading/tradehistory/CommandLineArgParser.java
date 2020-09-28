@@ -1,5 +1,7 @@
 package com.remal.signaltrading.tradehistory;
 
+import java.util.Arrays;
+
 import com.remal.signaltrading.tradehistory.task.CoinbaseAccountsTask;
 import com.remal.signaltrading.tradehistory.task.CoinbaseCandlesTask;
 import com.remal.signaltrading.tradehistory.task.CoinbaseProductsTask;
@@ -19,13 +21,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CommandLineArgParser implements CommandLineRunner {
 
-    private ThreadPoolTaskScheduler taskScheduler;
-    private ObjectProvider<CoinbaseCandlesTask> coinbaseCandlesPrototype;
-    private CoinbaseAccountsTask coinbaseAccountsTask;
-    private CoinbaseProductsTask coinbaseProductsTask;
+    private final ThreadPoolTaskScheduler taskScheduler;
+    private final ObjectProvider<CoinbaseCandlesTask> coinbaseCandlesPrototype;
+    private final CoinbaseAccountsTask coinbaseAccountsTask;
+    private final CoinbaseProductsTask coinbaseProductsTask;
 
     @Value("${exchange.coinbase.scheduler-delay}")
     private long delay;
+
+    @Value("${exchange.coinbase.tickers}")
+    private String[] tickers;
 
     /**
      * Constructor.
@@ -54,9 +59,8 @@ public class CommandLineArgParser implements CommandLineRunner {
 
         switch (args[0]) {
             case "candles":
-                taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("ETH-EUR"), delay);
-                taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("BTC-EUR"), delay);
-                taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject("XRP-EUR"), delay);
+                Arrays.stream(tickers).forEach(
+                    t -> taskScheduler.scheduleWithFixedDelay(coinbaseCandlesPrototype.getObject(t), delay));
                 break;
 
             case "accounts":

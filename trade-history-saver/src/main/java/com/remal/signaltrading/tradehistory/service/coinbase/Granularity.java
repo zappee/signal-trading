@@ -18,17 +18,17 @@ public enum Granularity {
     SIX_HOURS(21600),
     ONE_DAY(86400);
 
-    private long value;
+    private final long value;
 
     Granularity(long value) {
         this.value = value;
     }
 
-    public long getValueInSec() {
+    public long getSeconds() {
         return value;
     }
 
-    public long getValueInMilli() {
+    public long getMilliseconds() {
         return value * 1000L;
     }
 }

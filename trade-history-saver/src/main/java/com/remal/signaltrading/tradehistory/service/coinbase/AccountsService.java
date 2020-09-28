@@ -39,7 +39,7 @@ public class AccountsService {
      */
     public List<Account> getAccounts() {
         log.trace("Getting accounts...");
-        List<Account> accounts = exchange.getAsList(ENDPOINT, new ParameterizedTypeReference<Account[]>() { });
+        List<Account> accounts = exchange.getAsList(ENDPOINT, new ParameterizedTypeReference<>() { });
         log.trace("You have " + accounts.size() + " accounts");
         if (!accounts.isEmpty()) {
             log.debug(accounts.stream().map(Account::toString).collect(Collectors.joining()));

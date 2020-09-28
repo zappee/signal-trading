@@ -20,27 +20,45 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @SpringBootConfiguration
 public class TaskSchedulerConfiguration {
 
-    private static TokenBucket tokenBucket;
-
+    private final TokenBucket tokenBucket;
     private final CandlesService candlesService;
     private final DataSource dataSource;
 
+    /**
+     * Initialize variables.
+     *
+     * @param candlesService candle RET API client
+     * @param dataSource data source
+     * @param allowedRequests allowed API requests within the period
+     * @param periodLength length of the period
+     */
     public TaskSchedulerConfiguration(CandlesService candlesService,
                                       DataSource dataSource,
-                                      @Value("${exchange.coinbase.allowed-requests-within-period}") int allowedApiRequestsWithinPeriod,
+                                      @Value("${exchange.coinbase.allowed-requests-within-period}") int allowedRequests,
                                       @Value("${exchange.coinbase.period-length}") int periodLength) {
 
         this.candlesService = candlesService;
         this.dataSource = dataSource;
-        tokenBucket = new TokenBucket(periodLength, allowedApiRequestsWithinPeriod);
+        tokenBucket = new TokenBucket(periodLength, allowedRequests);
     }
 
+    /**
+     * Trade history downloader task producer.
+     *
+     * @param id product ticker
+     * @return trade history downloader task
+     */
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public CoinbaseCandlesTask coinbaseCandlesTaskFactory(String id) {
         return new CoinbaseCandlesTask(id, tokenBucket, candlesService, dataSource);
     }
 
+    /**
+     * Initialization of Spring's TaskScheduler.
+     *
+     * @return the initialized scheduler
+     */
     @Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();

@@ -18,41 +18,58 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TokenBucket {
 
-    private static Vector<Token> tokens = new Vector<>();
+    private static final Vector<Token> tokens = new Vector<>();
 
     /**
      * Coinbase public endpoints allows 3 requests per second
      */
-    private long lengthOfPeriod;
+    private final long lengthOfPeriod;
 
     /**
      * Coinbase public endpoints allows 3 requests per second
      */
-    private long maxRequestsWithinPeriod;
+    private final long maxRequestsWithinPeriod;
 
+    /**
+     * Constructor.
+     *
+     * @param lengthOfPeriod length of the period in milliseconds
+     * @param maxRequestsWithinPeriod number of the maximum requests within the period
+     */
     public TokenBucket(long lengthOfPeriod, long maxRequestsWithinPeriod) {
         this.lengthOfPeriod = lengthOfPeriod;
         this.maxRequestsWithinPeriod = maxRequestsWithinPeriod;
     }
 
-    public synchronized Optional<String> consume() {
+    /**
+     * Acquires a single execution permit from the given task.
+     *
+     * @param taskId identifier of the calling task
+     * @return task ID belongs to the given task
+     */
+    public synchronized Optional<String> acquire(String taskId) {
         long now = System.currentTimeMillis();
         long runningTasks = tokens.stream().filter(token -> token.getFinishedAt() == null).count();
         long completedWithinPeriod = tokens.stream()
-                .filter(token -> (token.getFinishedAt() != null) && (token.getFinishedAt() >= now - lengthOfPeriod))
+                .filter(token -> (token.getFinishedAt() != null) && (token.getFinishedAt() > now - lengthOfPeriod))
                 .count();
 
         log.trace("running: {}, completed: {}, bucket: {}", runningTasks, completedWithinPeriod, tokens.toString());
 
         String tokenId = UUID.randomUUID().toString();
         if (runningTasks + completedWithinPeriod < maxRequestsWithinPeriod) {
-            tokens.add(Token.builder().id(tokenId).startAt(now).build());
+            tokens.add(Token.builder().id(tokenId).taskId(taskId).startAt(now).build());
             return Optional.of(tokenId);
         }
 
         return Optional.empty();
     }
 
+    /**
+     * Freed the given execution permit.
+     *
+     * @param token execution permit token
+     */
     public synchronized void release(String token) {
         long now = System.currentTimeMillis();
         tokens.stream()

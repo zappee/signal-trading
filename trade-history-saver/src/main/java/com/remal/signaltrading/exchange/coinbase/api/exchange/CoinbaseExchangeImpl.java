@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
  */
 @Slf4j
 public class CoinbaseExchangeImpl implements CoinbaseExchange {
+
+    private static final int CONNECTION_TIMEOUT = 5000;
 
     private final String publicKey;
     private final String passphrase;
@@ -52,7 +55,10 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
         this.baseUrl = baseUrl;
         this.signature = signature;
         this.objectMapper = objectMapper;
+
         this.restTemplate = new RestTemplate();
+        ((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory()).setConnectTimeout(CONNECTION_TIMEOUT);
+        ((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory()).setReadTimeout(CONNECTION_TIMEOUT);
     }
 
     @Override

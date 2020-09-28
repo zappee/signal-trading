@@ -11,4 +11,38 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>technical-analysis-api</artifactId>
 
+    <properties>
+        <hikariCp.version>3.4.5</hikariCp.version>
+        <lombok.version>1.18.12</lombok.version>
+        <postgresql.version>42.2.16</postgresql.version>
+        <springBoot.version>2.3.3.RELEASE</springBoot.version>
+    </properties>
+
+    <dependencies>
+        <!-- spring framework -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${springBoot.version}</version>
+        </dependency>
+        <!-- automatic generation of getters, setters, equals, hashCode and toString, and more -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- ultimate JDBC Connection Pool -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikariCp.version}</version>
+        </dependency>
+        <!-- PostgreSQL JDBC Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+    </dependencies>
 </project>

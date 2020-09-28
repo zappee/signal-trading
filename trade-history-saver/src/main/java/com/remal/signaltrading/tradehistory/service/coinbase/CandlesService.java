@@ -46,7 +46,7 @@ public class CandlesService {
      */
     public List<Candle> getCandles(String productId) {
         String endpoint = String.format(ENDPOINT, productId);
-        String response = exchange.get(endpoint, new ParameterizedTypeReference<String>() { });
+        String response = exchange.get(endpoint, new ParameterizedTypeReference<>() { });
         return parseResponse(productId, response);
     }
 
@@ -67,15 +67,15 @@ public class CandlesService {
         String endpoint = String.format(ENDPOINT, productId)
                 + "?start=" + StringEscapeUtils.escapeHtml4(utcStart)
                 + "&end=" + StringEscapeUtils.escapeHtml4(utcEnd)
-                + "&granularity=" + granularity.getValueInSec();
+                + "&granularity=" + granularity.getSeconds();
 
         log.debug("getting historical rates, endpoint: " + endpoint + "...");
 
-        String response = exchange.get(endpoint, new ParameterizedTypeReference<String>() { });
+        String response = exchange.get(endpoint, new ParameterizedTypeReference<>() { });
         List<Candle> candles = parseResponse(productId, response);
 
         if (candles.isEmpty()) {
-            log.debug("no candles have been downloaded");
+            log.debug("nothing to downloaded");
         } else {
             log.debug("{} candles have been downloaded: {}",
                     candles.size(),
@@ -91,10 +91,10 @@ public class CandlesService {
         response = response.replaceAll("^.|.$", "");
 
         // remove entry separators: "],[" -> "]["
-        response = response.replaceAll("\\],\\[", "][");
+        response = response.replaceAll("],\\[", "][");
 
         // split to candle groups: [...][...][...]
-        Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+        Pattern pattern = Pattern.compile("\\[(.*?)]");
         Matcher matcher = pattern.matcher(response);
         while (matcher.find()) {
             // group example: [1598120940,331.98,332.24,332.05,331.99,6.82750791]

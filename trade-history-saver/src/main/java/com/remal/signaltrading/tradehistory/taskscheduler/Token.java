@@ -16,6 +16,7 @@ import lombok.ToString;
 @ToString
 public class Token {
     private String id;
+    private String taskId;
     private Long startAt;
     private Long finishedAt;
 }
