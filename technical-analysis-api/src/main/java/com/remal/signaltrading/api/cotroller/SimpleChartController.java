@@ -110,8 +110,8 @@ public class SimpleChartController extends ChartController {
             dataPoint -> sb
                     .append(dataPoint.getLabel())
                     .append(DATA_SEPARATOR)
-                    .append(Objects.isNull(dataPoint.getPrice()) ? "0" : dataPoint.getPrice()).append(DATA_SEPARATOR)
-                    .append(Objects.isNull(dataPoint.getVolume()) ? "0" : dataPoint.getVolume())
+                    .append(Objects.isNull(dataPoint.getPrice()) ? "" : dataPoint.getPrice()).append(DATA_SEPARATOR)
+                    .append(Objects.isNull(dataPoint.getVolume()) ? "" : dataPoint.getVolume())
                     .append(LINE_SEPARATOR)
         );
         return sb.toString();

@@ -66,7 +66,7 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
 
 * period start and end: timestamp in UTC timezone, format: `yyyy-mm-ddThh.mm.ss`
 
-### 5.2) Historical average price API
+### 5.2) Historical average price and volume API
 #### 5.2.1) With interval
 * URL: `GET /api/fix-interval`
 * Parameters:
@@ -74,9 +74,9 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
     + interval: requested interval back in time from now
     + scale: the granularity of the data
 * Example requests:
-    + last hour with one minute timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60)
-    + last day with one minute timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=86400&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=86400&scale=60)
-    + last month with a daily timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=2592000&scale=86400](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=2592000&scale=86400)
+    + last hour with one-minute timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=3600&scale=60)
+    + last day with one-minute timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=86400&scale=60](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=86400&scale=60)
+    + last month with daily timeframe: `GET` [http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=2592000&scale=86400](http://localhost:8081/api/fix-interval?ticker=ETH-EUR&interval=2592000&scale=86400)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 #### 5.2.2) With period start and end
@@ -86,7 +86,8 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
     * start: start of the period
     * end: end of the period
     * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00&end=2020-12-31T23:59:59&scale=86400](http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-01-01T00:00:00&end=2020-12-31T23:59:59&scale=86400)
+* Example requests:
+    + daily chart with 30-minute timeframe: `GET` [http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-09-14T00:00:00&end=2020-09-15T00:00:00&scale=86400](http://localhost:8081/api/period?ticker=ETH-EUR&start=2020-09-14T00:00:00&end=2020-09-15T00:00:00&scale=86400)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 #### 5.2.3) Weekly average price with 7 timelines for each day of the week API
@@ -95,19 +96,26 @@ $ mvn org.springframework.boot:spring-boot-maven-plugin:run
     * ticker: the name of the product
     * day: any day in the week
     * scale: the granularity of the data
-* Example request: `GET` [http://localhost:8081/api/weekly?ticker=ETH-EUR&day=2020-09-16&scale=1800](http://localhost:8081/api/weekly?ticker=ETH-EUR&day=2020-09-16&scale=1800)
+* Example requests:
+    + weekly chart to show the pattern of changing in prices within days: `GET` [http://localhost:8081/api/weekly?ticker=ETH-EUR&day=2020-09-21&scale=1800](http://localhost:8081/api/weekly?ticker=ETH-EUR&day=2020-09-21&scale=1800)
 * Responses: HTTP 400 or HTTP 200 with the generated CVS file
 
 ## 6) Example charts
 
-* daily radar chart with 1h scale:
+* historical price and volume chart for the last hour with 60-seconds scale:
 
-    ![](docs/example-chatrs/ETH-EUR%20daily%20radar%20chart.png)
+    ![](docs/example-chatrs/last-hour-price-and-volume.png)
 
-* weekly radar chart shows trends in price and volume within days (from Monday to Sunday:
+* daily historical radar chart with 30-minutes scale:
 
-    ![](docs/aaa.png)
+    ![](docs/example-chatrs/daily-price.png)
 
-* daily historical prices with 1h scale:
+* daily historical price and volume chart with 60-minutes scale:
 
-    ![](docs/example-chatrs/ETH-EUR%20daily%20line%20chart.png)
+    ![](docs/example-chatrs/daily-price-and-volume.png)
+
+* weekly radar chart shows trends in price and volume within days (from Monday to Sunday):
+
+    ![](docs/example-chatrs/weekly-price-pattern.png)
+    
+You can download the Excel spreadsheet from [here](docs/example-chatrs/charts.xlsx) which contains the data and the charts. 
