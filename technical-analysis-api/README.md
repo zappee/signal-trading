@@ -1,7 +1,7 @@
 # API provides data for technical analysis
 
 ## 1) Overview
-This API exports data to the CVS files based on the given criteria.
+This API exports data to CVS file based on the given criteria.
 The exported data can be used to generate different kinds of charts in Microsoft Excel.
 
 ## 2) Database configuration (PostgreSQL)
