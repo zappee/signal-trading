@@ -27,6 +27,7 @@ The application needs to be configured properly before the first run. The applic
 |exchange.coinbase.key|n/a|The Key will be randomly generated and provided by CoinbasePro.|
 |exchange.coinbase.secret|n/a|The Secret will be randomly generated and provided by CoinbasePro.|
 |exchange.coinbase.passphrase|n/a|Passphrase will be provided by you to further secure your API access. CoinbasePro stores the salted hash of your passphrase for verification, but cannot recover the passphrase if you forget it.|
+|exchange.coinbase.tickers|ETH-EUR,ETH-USD,BTC-EUR,BTC-USD,XRP-EUR,XRP-USD|Products to download|
 |datasource.driver-class-name|org.postgresql.Driver|JDBC driver class name.|
 |datasource.url|jdbc:postgresql://localhost:5432/crypto|JDBC connection string.|
 |datasource.username|NA|Name for the database login.|
@@ -54,3 +55,8 @@ Supported profiles:
 * candles
 * accounts
 * products
+
+## 5) Appendix
+
+### 5.1) Export database schema
+`pg_dump -U <username> crypto > crypto-export.pgsql`
