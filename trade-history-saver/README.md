@@ -32,7 +32,7 @@ The application needs to be configured properly before the first run. The applic
 |datasource.url|jdbc:postgresql://localhost:5432/crypto|JDBC connection string.|
 |datasource.username|NA|Name for the database login.|
 |datasource.password|NA|Password for the connecting user.|
-|exchange.coinbase.tickers|NA|Tickers to download.|
+|exchange.coinbase.tickers|ETH-EUR,BTC-EUR,XRP-EUR,ETH-USD|Tickers to download.|
 
 ### 4.2) Advanced configuration parameters
 
