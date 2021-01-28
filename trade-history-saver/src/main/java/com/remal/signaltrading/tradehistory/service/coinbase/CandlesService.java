@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -71,15 +72,18 @@ public class CandlesService {
 
         log.debug("getting historical rates, endpoint: " + endpoint + "...");
 
+        List<Candle> candles = new ArrayList<>();
         String response = exchange.get(endpoint, new ParameterizedTypeReference<>() { });
-        List<Candle> candles = parseResponse(productId, response);
+        if (Objects.nonNull(response)) {
+            candles.addAll(parseResponse(productId, response));
 
-        if (candles.isEmpty()) {
-            log.debug("nothing to downloaded");
-        } else {
-            log.debug("{} candles have been downloaded: {}",
-                    candles.size(),
-                    candles.stream().map(Candle::toString).collect(Collectors.joining()));
+            if (candles.isEmpty()) {
+                log.debug("nothing to downloaded");
+            } else {
+                log.debug("{} candles have been downloaded: {}",
+                        candles.size(),
+                        candles.stream().map(Candle::toString).collect(Collectors.joining()));
+            }
         }
         return candles;
     }

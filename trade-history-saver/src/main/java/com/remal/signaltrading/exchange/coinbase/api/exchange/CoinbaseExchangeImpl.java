@@ -72,7 +72,7 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
                     responseType);
             return responseEntity.getBody();
         } catch (HttpClientErrorException ex) {
-            log.error("GET request failed for '{}': {}", resourcePath, ex.getMessage());
+            log.warn("GET request failed for '{}': {}", resourcePath, ex.getMessage());
         }
         return null;
     }
